@@ -4,14 +4,14 @@ require 'sinatra/activerecord'
 
 class User < ActiveRecord::Base
   include ActiveModel::Dirty
-	has_many :entries
-	before_save :create_hashed_password, if: :password_changed?
+  has_many :entries
+  before_save :create_hashed_password, if: :password_changed?
 
   EMAIL_REGEX = /\A[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\z/i
 
-	validates :email, :presence => true, :length => { :within => 5..100 },
-		:format=>EMAIL_REGEX, :confirmation => true, :uniqueness=>true
-	validates :password, :presence => true
+  validates :email, :presence => true, :length => { :within => 5..100 },
+    :format=>EMAIL_REGEX, :confirmation => true, :uniqueness=>true
+  validates :password, :presence => true
 
   class << self
     def authenticate(email='', password = '')
@@ -42,13 +42,13 @@ class User < ActiveRecord::Base
     }.to_json
   end
 
-	def create_hashed_password
-		unless password.blank?
-			self.salt ||= User.make_salt
-			self.password = User.get_hashed_password(password)
+  def create_hashed_password
+    unless password.blank?
+      self.salt ||= User.make_salt
+      self.password = User.get_hashed_password(password)
       self.token = Digest::SHA1.hexdigest(password + salt)[0..20]
-		end
+    end
 
-	end
+  end
 
 end
