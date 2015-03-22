@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131213160259) do
+ActiveRecord::Schema.define(version: 20150322070754) do
 
   create_table "entries", force: :cascade do |t|
     t.string   "password",    limit: 255
@@ -39,8 +39,10 @@ ActiveRecord::Schema.define(version: 20131213160259) do
     t.string   "salt",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "token",      limit: 255
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
+  add_index "users", ["token"], name: "index_users_on_token", using: :btree
 
 end

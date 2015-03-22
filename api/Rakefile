@@ -9,3 +9,7 @@ end
 task :console do
   system "./script/console"
 end
+
+task :server do
+  system "bundle exec rackup -p 4567"
+end
