@@ -7,38 +7,12 @@ module Passwd
     register Sinatra::ActiveRecordExtension
     attr_accessor :current_user
 
-    before do
-      session[:csrf] ||= SecureRandom.hex(32)
-
-      response.set_cookie 'authenticity_token', {
-        value: session[:csrf],
-        expires: Time.now + (60 * 60 * 24 * 180), # that's 180 days
-        path: '/',
-        httponly: true
-        # secure: true # if you have HTTPS (and you should) then enable this
-        }
-      # this is a Rack method, that basically asks
-      #   if we're doing anything other than GET
-      if !request.safe?
-        # check that the session is the same as the form
-        #   parameter AND the cookie value
-        if session[:csrf] == params['_csrf'] && session[:csrf] == request.cookies['authenticity_token']
-          # everything is good.
-        else
-          halt 403, 'CSRF failed'
-        end
-      end
-    end
-
     def self.api_for(resource)
       config = YAML.load File.read('config/passwd.yml')
       "/api/#{config[:api_version]}#{resource}"
     end
 
-    get api_for('/entries') do
-      authenticate!
-      current_user.entries.to_json
-    end
+    ## Login
 
     post api_for('/login') do
       params = json_params
@@ -51,11 +25,61 @@ module Passwd
       end
     end
 
+
+    ## Entry CRUD
+
+    get api_for('/entries') do
+      authenticate!
+      current_user.entries.to_json
+    end
+
+    get api_for('/entries/:entry_id') do
+      authenticate!
+      entry = Entry.find(params[:entry_id]) rescue nil
+      render_not_found unless entry
+
+      if current_user.entries.include? entry
+        entry.to_json
+      else
+        render_no_access
+      end
+    end
+
+    post api_for('/entries') do
+      authenticate!
+      params = json_params
+      entry = Entry.create(user_id: current_user.id, username: params[:username],
+                           description: params[:description], password: params[:password])
+      entry.to_json
+    end
+
+    put api_for('/entries/:entry_id') do
+      authenticate!
+      entry = Entry.find(params[:entry_id]) rescue nil
+      render_not_found unless entry
+      params = json_params
+      entry.update_attributes(username: params[:username],
+                              description: params[:description], password: params[:password])
+      entry.to_json
+    end
+
+    delete api_for('/entries/:entry_id') do
+      authenticate!
+      entry = Entry.find(params[:entry_id]) rescue nil
+      render_not_found unless entry
+
+      if current_user.entries.include? entry
+        entry.destroy.to_json
+      else
+        render_no_access
+      end
+    end
+
+    ## Helper methods
+
     private
     def authenticate!
-      puts params.inspect
       @current_user = User.find_by_token(params[:private_token])
-      puts "current_user: #{current_user.inspect}"
       render_no_access unless current_user
       current_user
     end
@@ -68,6 +92,9 @@ module Passwd
       halt 403, {message: "Access Denied"}.to_json
     end
 
+    def render_not_found
+      halt 404, {message: "Not Found"}.to_json
+    end
+
   end
 end
-
