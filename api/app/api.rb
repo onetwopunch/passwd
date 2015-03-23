@@ -6,6 +6,10 @@ module Passwd
   class Api < Sinatra::Base
     register Sinatra::ActiveRecordExtension
     attr_accessor :current_user
+    before do
+      puts "Params: #{params.inspect}"
+      puts "JSON: #{json_params.inspect}"
+    end
 
     def self.api_for(resource)
       config = YAML.load File.read('config/passwd.yml')
@@ -15,8 +19,6 @@ module Passwd
     ## Login
 
     post api_for('/login') do
-      params = json_params
-      puts params.inspect
       user = User.authenticate(params[:email], params[:password])
       if user
         user.to_json
@@ -85,7 +87,8 @@ module Passwd
     end
 
     def json_params
-      JSON.parse(request.body.read).symbolize_keys
+      puts "Body: #{request.body.inspect}"
+      JSON.parse(request.body.read).symbolize_keys rescue {}
     end
 
     def render_no_access
