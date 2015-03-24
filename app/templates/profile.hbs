@@ -1,1 +1,7 @@
 <h3>Profile</h3>
+
+<ul>
+  {{#each entry in model}}
+    <li>{{entry.description}}</li>
+  {{/each}}
+</ul>

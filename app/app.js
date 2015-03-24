@@ -12,10 +12,6 @@ var App = Ember.Application.extend({
   Resolver: Resolver
 });
 
-App.ApplicationAdapter = DS.RESTAdapter.extend({
-  namespace: 'api/v1',
-  host: config.host
-});
 loadInitializers(App, config.modulePrefix);
 
 export default App;
