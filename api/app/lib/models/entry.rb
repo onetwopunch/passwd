@@ -5,10 +5,15 @@ class Entry < ActiveRecord::Base
   belongs_to :user
   before_save :encrypt
 
+  def decrypted
+    {
+      description: description,
+      username: username,
+      password: decrypted_password
+    }
+  end
 
   def decrypted_password
-    puts "password : " + password
-    puts "key : " + key
     AES.decrypt(password, key)
   end
 

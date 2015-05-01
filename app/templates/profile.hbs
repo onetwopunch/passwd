@@ -1,7 +1,22 @@
 <h3>Profile</h3>
-
-<ul>
-  {{#each entry in model}}
-    <li>{{entry.description}}</li>
-  {{/each}}
-</ul>
+<div class='row'>
+  <div class='col-xs-6 col-xs-offset-3'>
+    <ul class= 'list-group'>
+      {{#each entry in model}}
+        <li class='entry list-group-item'>
+          <span class='controls pull-right'>
+            <button class="btn btn-default btn-xs">
+              {{fa-icon 'edit'}}
+            </button>
+            <button class="btn btn-danger btn-xs">
+              {{fa-icon 'trash'}}
+            </button>
+          </span>
+          <span {{action "entryDetails" entry.id}}>
+            {{entry.description}}
+          </span>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</div>

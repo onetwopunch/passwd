@@ -1,2 +1,12 @@
 @import 'bower_components/bootstrap-sass-official/assets/stylesheets/_bootstrap';
 @import 'bower_components/fontawesome/scss/font-awesome';
+
+.controls button{
+  margin-left: 5px;
+}
+.entry {
+  &:hover {
+    background: #f1f1f1;
+    cursor: pointer;
+  }
+}

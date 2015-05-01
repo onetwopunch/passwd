@@ -14,8 +14,7 @@ export default Ember.Controller.extend({
         console.log( data );
 
         if ( data.private_token ) {
-          var ret = Ember.$.cookie('private_token', data.private_token, {expires: 1/12});
-          console.log(ret);
+          localStorage.private_token = data.private_token;
           controller.transitionToRoute('profile');
         }
       });

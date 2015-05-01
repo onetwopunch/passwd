@@ -51,13 +51,13 @@ module Passwd
       {entries: current_user.entries}.to_json
     end
 
-    get api_for('/entries/:entry_id') do
+    get api_for('/decrypt/:id') do
       authenticate!
-      entry = Entry.find(params[:entry_id]) rescue nil
+      entry = Entry.find(params[:id]) rescue nil
       render_not_found unless entry
 
       if current_user.entries.include? entry
-        entry.to_json
+        entry.decrypted.to_json 
       else
         render_no_access
       end
@@ -106,7 +106,7 @@ module Passwd
     end
 
     def render_no_access
-      halt 200, {success: false, message: "Access Denied"}.to_json
+      halt 401, {success: false, message: "Access Denied"}.to_json
     end
 
     def render_not_found

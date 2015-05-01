@@ -19,6 +19,5 @@ var app = new EmberApp();
 
 // Bootstrap
 app.import('bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js');
-app.import("bower_components/jquery-cookie/jquery.cookie.js");
 
 module.exports = app.toTree();
